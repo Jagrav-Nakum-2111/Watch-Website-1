@@ -1,0 +1,2903 @@
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import {
+  Search, ShoppingBag, Heart, User, ChevronDown, Star, X, Filter,
+  SlidersHorizontal, Check, ShieldCheck, Truck, RefreshCw, Clock, Tag,
+  Eye, Plus, Minus, Trash2, ArrowRight, Lock, CheckCircle, Menu,
+  ExternalLink, Download, Printer, BarChart3, Package, Users, Settings,
+  Award, Compass, Sparkles, AlertCircle, ChevronLeft, ChevronRight, Phone,
+  Mail, MapPin, Percent, HelpCircle, FileText, ChevronUp
+} from 'lucide-react';
+
+// --- BRAND COLOR CONSTANTS ---
+// Soft Cream: #F7F3EA, Ivory: #FFFDF8, Light Grey: #E8E6E1, Muted Rose: #D8B8B5
+// Sage Green: #B8C5B0, Powder Blue: #B9CBD8, Champagne Gold: #C9A45C, Dark Charcoal: #292825
+
+const INITIAL_PRODUCTS = [
+  // --- COLLECTION 1: WATCHES FOR COUPLES ---
+  {
+    id: 'WAT-CUP-01',
+    brand: 'Omega',
+    name: 'Constellation Co-Axial Master Chronometer Couple Set',
+    category: 'Watches for Couples',
+    description: 'A harmonious pairing of legendary precision and elegant design. Features matching 18K Sedna™ Gold bezel with iconic claws and silvered sun-brush dials.',
+    price: 680000,
+    originalPrice: 750000,
+    discount: 9,
+    sku: 'OMG-CUP-CONST-88',
+    stock: 4,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.9,
+    reviewsCount: 18,
+    material: '18K Sedna Gold & Stainless Steel',
+    movement: 'Co-Axial Automatic Calibre 8800 / 8700',
+    strap: 'Bi-metal Integrated Bracelet',
+    waterResistance: '50 Meters / 5 ATM',
+    warranty: '5 Years International Warranty',
+    featured: true
+  },
+  {
+    id: 'WAT-CUP-02',
+    brand: 'Titan',
+    name: 'Bandhan Gold-Plated Heritage Pair',
+    category: 'Watches for Couples',
+    description: 'Crafted for milestone celebrations, this pair embodies traditional warmth with Champagne guilloché dials and scratch-resistant sapphire crystal.',
+    price: 32995,
+    originalPrice: 38995,
+    discount: 15,
+    sku: 'TTN-BDN-2026',
+    stock: 12,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1539874754764-5a96559165b0?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.7,
+    reviewsCount: 34,
+    material: 'Ion-Plated Champagne Gold Steel',
+    movement: 'Precision Japanese Quartz',
+    strap: 'Gold Plated Stainless Steel Link',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: '2 Years Manufacturer Warranty',
+    featured: false
+  },
+  {
+    id: 'WAT-CUP-03',
+    brand: 'Tissot',
+    name: 'PRX Automatic Dual Heritage Set',
+    category: 'Watches for Couples',
+    description: '1978 design re-imagined for modern connoisseurs. Featuring Powermatic 80 movements with anti-magnetic Nivachron hairsprings for both partners.',
+    price: 115000,
+    originalPrice: 128000,
+    discount: 10,
+    sku: 'TIS-PRX-DUO-78',
+    stock: 6,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.8,
+    reviewsCount: 22,
+    material: '316L Stainless Steel Satin Finish',
+    movement: 'Powermatic 80 Automatic (80-hour power reserve)',
+    strap: 'Integrated Tissot Quick-Release Steel',
+    waterResistance: '100 Meters / 10 ATM',
+    warranty: '3 Years Global Warranty',
+    featured: true
+  },
+  {
+    id: 'WAT-CUP-04',
+    brand: 'Fossil',
+    name: 'His and Hers Modern Courier Dual Edition',
+    category: 'Watches for Couples',
+    description: 'Understated elegance in smoky grey PVD with subtle rose gold markers. Built for contemporary lifestyle with everyday versatility.',
+    price: 24995,
+    originalPrice: 29995,
+    discount: 16,
+    sku: 'FOS-HIS-HER-04',
+    stock: 9,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.5,
+    reviewsCount: 15,
+    material: 'Gunmetal PVD Stainless Steel',
+    movement: 'Quartz Multi-Function',
+    strap: 'Genuine Italian Calfskin Leather',
+    waterResistance: '50 Meters / 5 ATM',
+    warranty: '2 Years International Warranty',
+    featured: false
+  },
+  {
+    id: 'WAT-CUP-05',
+    brand: 'Casio',
+    name: 'Sheen & Edifice Premier Couple Edition',
+    category: 'Watches for Couples',
+    description: 'High-tech functionality meets Swarovski crystal appointments. Chronograph accuracy for him, sparkling sophistication for her.',
+    price: 28500,
+    originalPrice: 32000,
+    discount: 11,
+    sku: 'CAS-SHN-EDF-05',
+    stock: 8,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1533139502658-0198f920d8e8?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.6,
+    reviewsCount: 19,
+    material: 'Stainless Steel with Swarovski Accents',
+    movement: 'Tough Solar Quartz',
+    strap: 'Solid Stainless Steel Mesh',
+    waterResistance: '100 Meters / 10 ATM',
+    warranty: '2 Years Manufacturer Warranty',
+    featured: false
+  },
+
+  // --- COLLECTION 2: WATCHES FOR MEN ---
+  {
+    id: 'WAT-MEN-01',
+    brand: 'Rolex',
+    name: 'Submariner Date 41mm Oystersteel Cerachrom',
+    category: 'Watches for Men',
+    description: 'The archetype of the diver watch. Features a striking black dial, large luminescent hour markers, and uni-directional rotatable Cerachrom bezel.',
+    price: 895000,
+    originalPrice: 950000,
+    discount: 5,
+    sku: 'RLX-SUB-126610LN',
+    stock: 2,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 5.0,
+    reviewsCount: 47,
+    material: '904L Oystersteel & Cerachrom Ceramic Bezel',
+    movement: 'Perpetual Calibre 3235 Self-Winding',
+    strap: 'Oyster Three-Piece Solid Links with Glidelock',
+    waterResistance: '300 Meters / 30 ATM',
+    warranty: '5 Years Rolex Guarantee',
+    featured: true
+  },
+  {
+    id: 'WAT-MEN-02',
+    brand: 'Omega',
+    name: 'Speedmaster Professional Moonwatch Chronograph',
+    category: 'Watches for Men',
+    description: 'Inspired by the 4th generation Moonwatch style worn on the moon. Co-Axial Master Chronometer Calibre 3861 with Hesalite crystal.',
+    price: 560000,
+    originalPrice: 610000,
+    discount: 8,
+    sku: 'OMG-SPD-MOON-3861',
+    stock: 5,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.9,
+    reviewsCount: 39,
+    material: 'Brushed Stainless Steel',
+    movement: 'Manual-Winding Omega Calibre 3861',
+    strap: 'Brushed Five-Arched-Links-Per-Row Bracelet',
+    waterResistance: '50 Meters / 5 ATM',
+    warranty: '5 Years International Warranty',
+    featured: true
+  },
+  {
+    id: 'WAT-MEN-03',
+    brand: 'Seiko',
+    name: 'Prospex Speedtimer Solar Chronograph',
+    category: 'Watches for Men',
+    description: 'Precision timing powered by any light source. Features sand-blasted dial texture inspired by historic Seiko sports timers.',
+    price: 58000,
+    originalPrice: 65000,
+    discount: 10,
+    sku: 'SEI-PRX-SPD-V192',
+    stock: 15,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1539874754764-5a96559165b0?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.7,
+    reviewsCount: 28,
+    material: 'Stainless Steel with Super-Hard Coating',
+    movement: 'Solar Calibre V192 (6 Months Power Reserve)',
+    strap: 'Stainless Steel Three-fold Clasp',
+    waterResistance: '100 Meters / 10 ATM',
+    warranty: '3 Years Seiko Warranty',
+    featured: false
+  },
+  {
+    id: 'WAT-MEN-04',
+    brand: 'Tissot',
+    name: 'Le Locle Powermatic 80 Open Heart',
+    category: 'Watches for Men',
+    description: 'Named after Tissot’s home in the Swiss Jura mountains. Features a guilloché dial and visible balance wheel at 12 o’clock.',
+    price: 48500,
+    originalPrice: 54000,
+    discount: 10,
+    sku: 'TIS-LELOC-OPEN-80',
+    stock: 10,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.8,
+    reviewsCount: 21,
+    material: '316L Stainless Steel with Rose Gold PVD',
+    movement: 'Powermatic 80 Automatic Movement',
+    strap: 'Embossed Alligator Leather',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: '2 Years Manufacturer Warranty',
+    featured: false
+  },
+  {
+    id: 'WAT-MEN-05',
+    brand: 'Citizen',
+    name: 'Eco-Drive Promaster Diver 200M ISO Certified',
+    category: 'Watches for Men',
+    description: 'ISO-compliant diver timepiece powered by light. Features aluminum uni-directional bezel and anti-reflective mineral crystal.',
+    price: 34000,
+    originalPrice: 39900,
+    discount: 14,
+    sku: 'CTZ-ECO-PRO-200',
+    stock: 14,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1533139502658-0198f920d8e8?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.6,
+    reviewsCount: 31,
+    material: 'Surgical Grade Stainless Steel',
+    movement: 'Eco-Drive Quartz (Never Needs Battery)',
+    strap: 'High-Durability Polyurethane Rubber Strap',
+    waterResistance: '200 Meters / 20 ATM Diver Certified',
+    warranty: '5 Years Brand Guarantee',
+    featured: false
+  },
+
+  // --- COLLECTION 3: WATCHES FOR WOMEN ---
+  {
+    id: 'WAT-WMN-01',
+    brand: 'Cartier',
+    name: 'Ballon Bleu De Cartier 33mm Automatic',
+    category: 'Watches for Women',
+    description: 'Floating like a balloon with a cabochon blue sapphire crown recessed into the case. Fluted crown and Roman numerals on silvered opaline dial.',
+    price: 540000,
+    originalPrice: 580000,
+    discount: 6,
+    sku: 'CRT-BAL-33-BLU',
+    stock: 3,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.9,
+    reviewsCount: 26,
+    material: 'Polished Stainless Steel with Synthetic Sapphire',
+    movement: 'Cartier Automatic Calibre 076',
+    strap: 'Polished Steel Interchangeable Bracelet',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: '8 Years Cartier Care Warranty',
+    featured: true
+  },
+  {
+    id: 'WAT-WMN-02',
+    brand: 'Omega',
+    name: 'De Ville Prestige Co-Axial Mother-of-Pearl',
+    category: 'Watches for Women',
+    description: 'Iridescent white mother-of-pearl dial with diamond hour markers set in 18K Sedna™ Gold holders. Timeless elegance for formal galas.',
+    price: 320000,
+    originalPrice: 350000,
+    discount: 8,
+    sku: 'OMG-DEV-MOP-DMD',
+    stock: 5,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1539874754764-5a96559165b0?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.9,
+    reviewsCount: 14,
+    material: 'Stainless Steel & 18K Sedna Gold',
+    movement: 'Co-Axial Automatic Calibre 2500',
+    strap: 'Bi-Colour Prestige Link Bracelet',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: '5 Years Omega Warranty',
+    featured: true
+  },
+  {
+    id: 'WAT-WMN-03',
+    brand: 'Fossil',
+    name: 'Jacqueline Rose Gold-Tone Mesh Watch',
+    category: 'Watches for Women',
+    description: 'Classic proportions with modern feminine charm. Roman hour markers on a shimmering rose sunray dial with delicate second hand.',
+    price: 11495,
+    originalPrice: 13995,
+    discount: 17,
+    sku: 'FOS-JAC-ROSE-M',
+    stock: 18,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.5,
+    reviewsCount: 42,
+    material: 'Rose Gold PVD Stainless Steel',
+    movement: 'Precision Quartz Three-Hand',
+    strap: 'Adjustable Rose Gold Steel Mesh',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: '2 Years Brand Warranty',
+    featured: false
+  },
+  {
+    id: 'WAT-WMN-04',
+    brand: 'Titan',
+    name: 'Raga Viva Diamond Marker Champagne Watch',
+    category: 'Watches for Women',
+    description: 'Designed as wearable jewelry. Features real diamond hour markers at quarterly positions and sleek mineral glass silhouette.',
+    price: 14995,
+    originalPrice: 17995,
+    discount: 16,
+    sku: 'TTN-RGA-VIV-04',
+    stock: 16,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.7,
+    reviewsCount: 38,
+    material: 'Champagne Gold Plated Brass',
+    movement: 'Slimline Japanese Quartz',
+    strap: 'Jewelry Clasp Metal Bracelet',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: '2 Years Manufacturer Warranty',
+    featured: false
+  },
+  {
+    id: 'WAT-WMN-05',
+    brand: 'Michael Kors',
+    name: 'Pyper Champagne Dial Gold Stainless Steel',
+    category: 'Watches for Women',
+    description: 'Sleek 38mm minimalism with stick indices and subtle pave crystal accents around the perimeter dial bezel.',
+    price: 16500,
+    originalPrice: 19500,
+    discount: 15,
+    sku: 'MK-PYP-GLD-38',
+    stock: 11,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1533139502658-0198f920d8e8?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.6,
+    reviewsCount: 29,
+    material: 'Polished Gold-Tone Stainless Steel',
+    movement: 'Quartz Three-Hand Movement',
+    strap: 'Stainless Steel Bracelet with Deployant Clasp',
+    waterResistance: '50 Meters / 5 ATM',
+    warranty: '2 Years International Warranty',
+    featured: false
+  },
+
+  // --- COLLECTION 4: WATCHES FOR CHILDREN ---
+  {
+    id: 'WAT-KID-01',
+    brand: 'Casio',
+    name: 'Baby-G Shock Resistant Youth Sports Digital',
+    category: 'Watches for Children',
+    description: 'Rugged protection engineered for young active explorers. Shock resistance, LED backlighting, 200m water resistance, and world time.',
+    price: 7995,
+    originalPrice: 8995,
+    discount: 11,
+    sku: 'CAS-BBG-KID-01',
+    stock: 20,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.7,
+    reviewsCount: 15,
+    material: 'Shock-Absorbing Resin Case',
+    movement: 'Digital Quartz with Multi-Alarm',
+    strap: 'Hypoallergenic Resin Strap',
+    waterResistance: '200 Meters / 20 ATM',
+    warranty: '2 Years Casio India Warranty',
+    featured: false
+  },
+  {
+    id: 'WAT-KID-02',
+    brand: 'Timex',
+    name: 'Youth Digital Outdoor Adventure Watch',
+    category: 'Watches for Children',
+    description: 'Features Timex signature Indiglo night-light, countdown timer, and comfortable washable nylon strap designed for small wrists.',
+    price: 3295,
+    originalPrice: 3995,
+    discount: 17,
+    sku: 'TMX-YTH-ADV-02',
+    stock: 25,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1533139502658-0198f920d8e8?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.4,
+    reviewsCount: 27,
+    material: 'Lightweight Resin & Acrylic Crystal',
+    movement: 'Digital Quartz',
+    strap: 'Fast Wrap Fabric Nylon Strap',
+    waterResistance: '50 Meters / 5 ATM',
+    warranty: '1 Year Manufacturer Warranty',
+    featured: false
+  },
+  {
+    id: 'WAT-KID-03',
+    brand: 'Garmin',
+    name: 'Vivofit Jr. 3 Kids Fitness & Activity Tracker',
+    category: 'Watches for Children',
+    description: 'Interactive swim-friendly tracker with parent-controlled app, step challenges, chore management rewards, and 1-year battery life.',
+    price: 7490,
+    originalPrice: 8990,
+    discount: 16,
+    sku: 'GRM-VVF-JR3-KID',
+    stock: 14,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.8,
+    reviewsCount: 33,
+    material: 'Tough Composite Polymer',
+    movement: 'Garmin Smart Sensor Processor',
+    strap: 'Stretchy Silicone Band',
+    waterResistance: '50 Meters / 5 ATM Swim-proof',
+    warranty: '1 Year Garmin Warranty',
+    featured: true
+  },
+  {
+    id: 'WAT-KID-04',
+    brand: 'Titan',
+    name: 'Zoop Digital Waterproof Kids Explorer',
+    category: 'Watches for Children',
+    description: 'Vibrant multi-colored digital display with stopwatch, chime, and sturdy acrylic casing designed for playground activities.',
+    price: 1895,
+    originalPrice: 2295,
+    discount: 17,
+    sku: 'TTN-ZOP-EXP-04',
+    stock: 30,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1539874754764-5a96559165b0?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.3,
+    reviewsCount: 19,
+    material: 'Impact Resistant Polycarbonate',
+    movement: 'Digital Quartz',
+    strap: 'Soft Polyurethane Strap',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: '1 Year Brand Guarantee',
+    featured: false
+  },
+  {
+    id: 'WAT-KID-05',
+    brand: 'Fastrack',
+    name: 'Kids Trendsetter Analog Quartz Watch',
+    category: 'Watches for Children',
+    description: 'Easy-to-read analog dial with bold contrast minute markings. Helps children learn to read time accurately and confidently.',
+    price: 2195,
+    originalPrice: 2595,
+    discount: 15,
+    sku: 'FST-KID-TRD-05',
+    stock: 0,
+    availability: 'Out of Stock',
+    images: [
+      'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.5,
+    reviewsCount: 12,
+    material: 'High-Impact Plastic Case',
+    movement: 'Precision Japanese Quartz Analog',
+    strap: 'Patterned Silicone Strap',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: '1 Year Fastrack Warranty',
+    featured: false
+  },
+
+  // --- COLLECTION 5: MASTERS COLLECTION ---
+  {
+    id: 'WAT-MST-01',
+    brand: 'Patek Philippe',
+    name: 'Grand Complications Perpetual Calendar 5320G',
+    category: 'Masters Collection',
+    description: 'The pinnacle of fine horology. White gold case with lacquered cream dial, perpetual calendar, moon phase, day/night indication, and leap year cycle.',
+    price: 4250000,
+    originalPrice: 4500000,
+    discount: 5,
+    sku: 'PP-GC-5320G-001',
+    stock: 1,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 5.0,
+    reviewsCount: 11,
+    material: '18K White Gold with Sapphire Crystal Back',
+    movement: 'Self-Winding Calibre 324 S Q (21K Gold Rotor)',
+    strap: 'Hand-Stitched Alligator Leather with Fold-Over Clasp',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: 'Patek Philippe Seal Lifetime Heritage Certificate',
+    featured: true
+  },
+  {
+    id: 'WAT-MST-02',
+    brand: 'Audemars Piguet',
+    name: 'Royal Oak Selfwinding 41mm Blue Tapisserie',
+    category: 'Masters Collection',
+    description: 'Gérald Genta’s icon in stainless steel. Features octagonal bezel with 8 hexagonal screws and legendary "Grande Tapisserie" blue dial.',
+    price: 3400000,
+    originalPrice: 3600000,
+    discount: 5,
+    sku: 'AP-RO-15510ST-01',
+    stock: 2,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 5.0,
+    reviewsCount: 29,
+    material: 'Hand-Finished Stainless Steel',
+    movement: 'Audemars Piguet Calibre 4302 (70h Power Reserve)',
+    strap: 'Integrated Steel Bracelet with AP Folding Clasp',
+    waterResistance: '50 Meters / 5 ATM',
+    warranty: '5 Years Audemars Piguet Guarantee',
+    featured: true
+  },
+  {
+    id: 'WAT-MST-03',
+    brand: 'A. Lange & Söhne',
+    name: 'Lange 1 Moon Phase Platinum 192.025',
+    category: 'Masters Collection',
+    description: 'Saxon craftsmanship at its finest. Asymmetrical dial layout with outsize date display and solid-gold moon disc with 383 hand-engraved stars.',
+    price: 3800000,
+    originalPrice: 4000000,
+    discount: 5,
+    sku: 'ALS-L1-MP-950',
+    stock: 1,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1539874754764-5a96559165b0?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.9,
+    reviewsCount: 9,
+    material: '950 Platinum with German Silver Plates',
+    movement: 'Hand-Wound Calibre L121.2 (Twin Mainspring Barrel)',
+    strap: 'Hand-Sewn Black Alligator Leather',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: '5 Years A. Lange & Söhne Warranty',
+    featured: true
+  },
+  {
+    id: 'WAT-MST-04',
+    brand: 'Vacheron Constantin',
+    name: 'Overseas Dual Time 41mm Blue Dial',
+    category: 'Masters Collection',
+    description: 'The traveler’s luxury timepiece. Dual time zone with day/night indicator, soft iron casing for anti-magnetic protection, and tool-less strap quick-change.',
+    price: 2950000,
+    originalPrice: 3100000,
+    discount: 5,
+    sku: 'VC-OVR-7900V-110A',
+    stock: 2,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1533139502658-0198f920d8e8?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.9,
+    reviewsCount: 16,
+    material: 'Stainless Steel with Hallmark of Geneva',
+    movement: 'Self-Winding Calibre 5110 DT (22K Gold Rotor)',
+    strap: 'Includes Steel, Rubber & Alligator Interchangeable Straps',
+    waterResistance: '150 Meters / 15 ATM',
+    warranty: '8 Years Vacheron Constantin Guarantee',
+    featured: false
+  },
+  {
+    id: 'WAT-MST-05',
+    brand: 'Jaeger-LeCoultre',
+    name: 'Reverso Tribute Duoface Small Seconds Pink Gold',
+    category: 'Masters Collection',
+    description: 'Art Deco reversible swivel case. Displays two time zones driven by a single mechanical movement across two distinct dials.',
+    price: 1280000,
+    originalPrice: 1400000,
+    discount: 8,
+    sku: 'JLC-REV-DUO-750',
+    stock: 3,
+    availability: 'In Stock',
+    images: [
+      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=1000',
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&q=80&w=1000'
+    ],
+    rating: 4.9,
+    reviewsCount: 17,
+    material: '18K 750 Pink Gold',
+    movement: 'Manually-Wound Jaeger-LeCoultre Calibre 854A',
+    strap: 'Casa Fagliano Leather Strap',
+    waterResistance: '30 Meters / 3 ATM',
+    warranty: '8 Years JLC Care Program',
+    featured: false
+  }
+];
+
+const INITIAL_COUPONS = [
+  { code: 'VAULT10', discountPercent: 10, minSpend: 10000, maxDiscount: 50000, active: true, usageCount: 142 },
+  { code: 'GRAND15', discountPercent: 15, minSpend: 50000, maxDiscount: 100000, active: true, usageCount: 89 },
+  { code: 'WELCOME10', discountPercent: 10, minSpend: 5000, maxDiscount: 25000, active: true, usageCount: 310 }
+];
+
+const INITIAL_ORDERS = [
+  {
+    id: 'ORD-2026-8891',
+    date: '2026-09-28',
+    customerName: 'Aarav Sharma',
+    email: 'aarav.sharma@example.com',
+    phone: '+91 98765 43210',
+    address: '42, Heritage Enclave, Golf Course Road, Gurugram, Haryana - 122002',
+    items: [
+      { id: 'WAT-MEN-02', name: 'Speedmaster Professional Moonwatch', brand: 'Omega', price: 560000, quantity: 1 }
+    ],
+    subtotal: 560000,
+    discount: 50000,
+    gst: 91800,
+    shipping: 0,
+    grandTotal: 601800,
+    paymentMethod: 'Credit Card (Razorpay Gateway)',
+    paymentStatus: 'Paid',
+    orderStatus: 'Delivered',
+    timeline: [
+      { label: 'Order Placed', time: 'Sep 28, 09:30 AM', completed: true },
+      { label: 'Payment Confirmed', time: 'Sep 28, 09:32 AM', completed: true },
+      { label: 'Processing', time: 'Sep 28, 11:00 AM', completed: true },
+      { label: 'Packed', time: 'Sep 28, 03:15 PM', completed: true },
+      { label: 'Shipped', time: 'Sep 29, 08:00 AM', completed: true },
+      { label: 'Out for Delivery', time: 'Sep 30, 09:10 AM', completed: true },
+      { label: 'Delivered', time: 'Sep 30, 02:45 PM', completed: true }
+    ]
+  },
+  {
+    id: 'ORD-2026-8904',
+    date: '2026-10-05',
+    customerName: 'Priya Mukherjee',
+    email: 'priya.m@example.com',
+    phone: '+91 98123 98765',
+    address: 'Suite 12B, Regency Heights, Bandra West, Mumbai, Maharashtra - 400050',
+    items: [
+      { id: 'WAT-WMN-01', name: 'Ballon Bleu De Cartier 33mm', brand: 'Cartier', price: 540000, quantity: 1 }
+    ],
+    subtotal: 540000,
+    discount: 50000,
+    gst: 88200,
+    shipping: 0,
+    grandTotal: 578200,
+    paymentMethod: 'UPI Express',
+    paymentStatus: 'Paid',
+    orderStatus: 'Shipped',
+    timeline: [
+      { label: 'Order Placed', time: 'Oct 05, 02:10 PM', completed: true },
+      { label: 'Payment Confirmed', time: 'Oct 05, 02:11 PM', completed: true },
+      { label: 'Processing', time: 'Oct 05, 04:00 PM', completed: true },
+      { label: 'Packed', time: 'Oct 06, 10:00 AM', completed: true },
+      { label: 'Shipped', time: 'Oct 06, 02:30 PM', completed: true },
+      { label: 'Out for Delivery', time: 'Estimated Oct 09', completed: false },
+      { label: 'Delivered', time: 'Pending', completed: false }
+    ]
+  }
+];
+
+const formatINR = (amount) => {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0
+  }).format(amount);
+};
+
+const ToastNotification = ({ toast, onClose }) => {
+  if (!toast) return null;
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-3 bg-[#292825] text-[#F7F3EA] px-5 py-4 rounded-lg shadow-2xl border border-[#C9A45C]/40 transition-all duration-300 animate-slide-up max-w-md">
+      <div className="p-2 rounded-full bg-[#C9A45C]/20 text-[#C9A45C]">
+        {toast.type === 'error' ? <AlertCircle className="w-5 h-5 text-red-400" /> : <Sparkles className="w-5 h-5" />}
+      </div>
+      <div className="flex-1">
+        <p className="font-serif text-sm font-semibold tracking-wide text-[#FFFDF8]">{toast.title}</p>
+        <p className="text-xs text-[#E8E6E1]/80 mt-0.5">{toast.message}</p>
+      </div>
+      <button onClick={onClose} className="text-[#E8E6E1] hover:text-[#C9A45C] transition">
+        <X className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
+
+const GlobalHeader = ({
+  activePage,
+  setActivePage,
+  cartCount,
+  wishlistCount,
+  onOpenCart,
+  onOpenSearch,
+  selectedCategory,
+  setSelectedCategory,
+  user
+}) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navItems = [
+    { label: 'Home', id: 'home' },
+    { label: 'Collections', id: 'categories' },
+    { label: 'Deals & Offers', id: 'deals' },
+    { label: 'About Heritage', id: 'about' },
+    { label: 'Contact Vault', id: 'contact' }
+  ];
+
+  return (
+    <>
+      {/* Announcement Bar */}
+      <div className="bg-[#292825] text-[#F7F3EA] text-xs py-2 px-4 text-center tracking-widest uppercase flex items-center justify-center space-x-4 border-b border-[#C9A45C]/30">
+        <span className="hidden sm:inline font-light">Complimentary Insured Express Delivery across India</span>
+        <span className="text-[#C9A45C]">|</span>
+        <span className="font-medium text-[#C9A45C]">Use Code VAULT10 for 10% Off</span>
+        <span className="hidden md:inline text-[#C9A45C]">|</span>
+        <span className="hidden md:inline font-light">Authenticity Guaranteed</span>
+      </div>
+
+      {/* Main Sticky Header */}
+      <header
+        className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+          isScrolled
+            ? 'bg-[#292825]/95 backdrop-blur-md shadow-xl py-3 border-b border-[#C9A45C]/30'
+            : 'bg-[#FFFDF8] py-5 border-b border-[#E8E6E1]'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+          
+          {/* Mobile Hamburger Button */}
+          <div className="flex items-center lg:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className={`p-2 rounded-md ${isScrolled ? 'text-[#F7F3EA]' : 'text-[#292825]'}`}
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+
+          {/* Logo Branding */}
+          <div
+            onClick={() => setActivePage('home')}
+            className="cursor-pointer flex flex-col items-center sm:items-start text-center sm:text-left select-none group"
+          >
+            <span className={`font-serif tracking-[0.25em] font-bold text-lg sm:text-xl md:text-2xl transition-colors duration-300 ${
+              isScrolled ? 'text-[#F7F3EA] group-hover:text-[#C9A45C]' : 'text-[#292825] group-hover:text-[#C9A45C]'
+            }`}>
+              THE GRAND HOROLOGY VAULT
+            </span>
+            <span className="text-[9px] uppercase tracking-[0.35em] text-[#C9A45C] font-semibold -mt-1">
+              GENÈVE • MUMBAI • SINCE 1898
+            </span>
+          </div>
+
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActivePage(item.id);
+                  if (item.id === 'categories') setSelectedCategory('All');
+                }}
+                className={`text-xs uppercase tracking-[0.2em] font-medium transition-all duration-200 relative py-1 ${
+                  activePage === item.id
+                    ? 'text-[#C9A45C] font-semibold'
+                    : isScrolled
+                    ? 'text-[#F7F3EA] hover:text-[#C9A45C]'
+                    : 'text-[#292825] hover:text-[#C9A45C]'
+                }`}
+              >
+                {item.label}
+                {activePage === item.id && (
+                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#C9A45C] rounded-full animate-pulse" />
+                )}
+              </button>
+            ))}
+          </nav>
+
+          {/* Right Action Icons */}
+          <div className="flex items-center space-x-4 sm:space-x-6">
+            <button
+              onClick={onOpenSearch}
+              className={`p-2 transition rounded-full hover:bg-[#C9A45C]/10 ${
+                isScrolled ? 'text-[#F7F3EA]' : 'text-[#292825]'
+              }`}
+              title="Search Vault Catalog"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => setActivePage('account')}
+              className={`hidden sm:flex items-center space-x-2 p-2 transition rounded-full hover:bg-[#C9A45C]/10 ${
+                isScrolled ? 'text-[#F7F3EA]' : 'text-[#292825]'
+              }`}
+              title="User Account"
+            >
+              <User className="w-5 h-5" />
+              {user && <span className="text-xs font-sans truncate max-w-[80px] hidden md:inline">{user.name.split(' ')[0]}</span>}
+            </button>
+
+            <button
+              onClick={() => setActivePage('wishlist')}
+              className={`relative p-2 transition rounded-full hover:bg-[#C9A45C]/10 ${
+                isScrolled ? 'text-[#F7F3EA]' : 'text-[#292825]'
+              }`}
+              title="Saved Wishlist"
+            >
+              <Heart className="w-5 h-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#C9A45C] text-[#292825] font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={onOpenCart}
+              className="relative flex items-center space-x-2 bg-[#C9A45C] hover:bg-[#b08c47] text-[#292825] px-4 py-2 rounded-full font-medium text-xs uppercase tracking-wider transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              <span className="hidden xs:inline">Vault</span>
+              <span className="bg-[#292825] text-[#F7F3EA] text-[11px] font-bold px-2 py-0.5 rounded-full ml-1">
+                {cartCount}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-[#292825] text-[#F7F3EA] border-t border-[#C9A45C]/30 px-6 py-6 space-y-4 animate-fade-in mt-3">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActivePage(item.id);
+                  if (item.id === 'categories') setSelectedCategory('All');
+                  setMobileMenuOpen(false);
+                }}
+                className={`block w-full text-left py-2 text-sm uppercase tracking-widest font-serif border-b border-[#E8E6E1]/10 ${
+                  activePage === item.id ? 'text-[#C9A45C] font-bold' : 'text-[#E8E6E1]'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+            <div className="pt-2 flex items-center justify-between text-xs text-[#E8E6E1]/80">
+              <button
+                onClick={() => {
+                  setActivePage('account');
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 text-[#C9A45C]"
+              >
+                <User className="w-4 h-4" />
+                <span>My Account & Orders</span>
+              </button>
+              <button
+                onClick={() => {
+                  setActivePage('admin');
+                  setMobileMenuOpen(false);
+                }}
+                className="text-xs text-[#C9A45C]/70 hover:underline"
+              >
+                Admin Portal
+              </button>
+            </div>
+          </div>
+        )}
+      </header>
+    </>
+  );
+};
+
+const HeroCarousel = ({ onExplore }) => {
+  const slides = [
+    {
+      id: 1,
+      tag: 'CRAFTSMANSHIP & PRECISION',
+      title: 'TIMELESS LEGACY & HOROLOGICAL MASTERY',
+      subtitle: 'Discover exceptional Swiss and Haute Horlogerie timepieces curated for those who measure life in milestones, not mere seconds.',
+      image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=1600',
+      cta: 'Explore Masters Collection',
+      category: 'Masters Collection'
+    },
+    {
+      id: 2,
+      tag: 'NEW ARRIVALS 2026',
+      title: 'ELEGANCE FOR TWO: HARMONIOUS PAIRINGS',
+      subtitle: 'Celebrate everlasting bonds with our curated luxury matching watch sets from Omega, Tissot, Titan & Casio Sheen.',
+      image: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=1600',
+      cta: 'Shop Couple Timepieces',
+      category: 'Watches for Couples'
+    },
+    {
+      id: 3,
+      tag: 'CERTIFIED AUTHENTICITY',
+      title: 'UNDERSTATED ICONIC DIVER & SPORT WATCHES',
+      subtitle: 'Engineered for extreme performance and effortless style. 300m water resistance, chronometer accuracy, and lifetime assurance.',
+      image: 'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=1600',
+      cta: 'Explore Men’s Icons',
+      category: 'Watches for Men'
+    }
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  return (
+    <div className="relative w-full h-[520px] sm:h-[620px] md:h-[680px] bg-[#292825] overflow-hidden">
+      {slides.map((slide, idx) => (
+        <div
+          key={slide.id}
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+            idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+          }`}
+        >
+          {/* Background Image with Gradient Overlay */}
+          <img
+            src={slide.image}
+            alt={slide.title}
+            className="w-full h-full object-cover object-center scale-105 transition-transform duration-10000 ease-linear"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#292825] via-[#292825]/80 to-transparent" />
+
+          {/* Slide Content */}
+          <div className="absolute inset-0 flex items-center">
+            <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 w-full">
+              <div className="max-w-xl text-[#F7F3EA] space-y-4 sm:space-y-6">
+                <div className="inline-flex items-center space-x-2 bg-[#C9A45C]/20 border border-[#C9A45C]/40 px-3 py-1 rounded-full">
+                  <Sparkles className="w-3.5 h-3.5 text-[#C9A45C]" />
+                  <span className="text-[11px] uppercase tracking-[0.25em] text-[#C9A45C] font-semibold">
+                    {slide.tag}
+                  </span>
+                </div>
+                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-[#FFFDF8] tracking-tight">
+                  {slide.title}
+                </h1>
+                <p className="text-sm sm:text-base text-[#E8E6E1]/90 font-light leading-relaxed">
+                  {slide.subtitle}
+                </p>
+                <div className="pt-4 flex flex-wrap gap-4">
+                  <button
+                    onClick={() => onExplore(slide.category)}
+                    className="bg-[#C9A45C] hover:bg-[#b08c47] text-[#292825] font-semibold px-8 py-3.5 rounded-full text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 flex items-center space-x-2"
+                  >
+                    <span>{slide.cta}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {/* Manual Previous/Next Controls */}
+      <button
+        onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-[#292825]/60 hover:bg-[#C9A45C] text-[#FFFDF8] hover:text-[#292825] p-3 rounded-full backdrop-blur-sm transition-all duration-300 border border-[#C9A45C]/30"
+        aria-label="Previous Slide"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
+
+      <button
+        onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-[#292825]/60 hover:bg-[#C9A45C] text-[#FFFDF8] hover:text-[#292825] p-3 rounded-full backdrop-blur-sm transition-all duration-300 border border-[#C9A45C]/30"
+        aria-label="Next Slide"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
+
+      {/* Carousel Dots */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-3">
+        {slides.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentSlide(idx)}
+            className={`h-2 rounded-full transition-all duration-300 ${
+              idx === currentSlide ? 'w-8 bg-[#C9A45C]' : 'w-2 bg-[#F7F3EA]/40 hover:bg-[#F7F3EA]'
+            }`}
+            aria-label={`Go to slide ${idx + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const TrustStrip = () => {
+  const trustItems = [
+    { icon: Award, title: '100% Authentic Timepieces', desc: 'Direct brand authorization & serial verification' },
+    { icon: ShieldCheck, title: 'Vault Warranty Protection', desc: 'Up to 8-year global manufacturer coverage' },
+    { icon: Truck, title: 'Insured Priority Shipping', desc: 'Complimentary tamper-proof courier on orders above ₹10,000' },
+    { icon: RefreshCw, title: '14-Day Hassle-Free Returns', desc: 'Complimentary return pick-up across India' },
+    { icon: Clock, title: 'Horology Concierge 24/7', desc: 'Expert consultation & sizing assistance' }
+  ];
+
+  return (
+    <section className="bg-[#FFFDF8] py-10 border-b border-[#E8E6E1]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          {trustItems.map((item, index) => {
+            const IconComponent = item.icon;
+            return (
+              <div key={index} className="flex flex-col items-center text-center p-3 group">
+                <div className="w-12 h-12 rounded-full bg-[#F7F3EA] border border-[#C9A45C]/30 flex items-center justify-center text-[#C9A45C] group-hover:bg-[#C9A45C] group-hover:text-[#292825] transition-all duration-300 mb-3">
+                  <IconComponent className="w-6 h-6" />
+                </div>
+                <h4 className="font-serif text-xs font-bold uppercase tracking-wider text-[#292825] mb-1">
+                  {item.title}
+                </h4>
+                <p className="text-[11px] text-[#292825]/70 leading-relaxed max-w-[180px]">
+                  {item.desc}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ProductCard = ({ product, onQuickView, onAddToCart, onBuyNow, onToggleWishlist, isWishlisted, onViewDetails }) => {
+  return (
+    <div className="group bg-[#FFFDF8] border border-[#E8E6E1] rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative hover:-translate-y-1">
+      
+      {/* Top Badges & Wishlist Trigger */}
+      <div className="absolute top-3 left-3 z-10 flex flex-col space-y-1.5">
+        {product.discount > 0 && (
+          <span className="bg-[#C9A45C] text-[#292825] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-sm">
+            -{product.discount}% OFF
+          </span>
+        )}
+        {product.featured && (
+          <span className="bg-[#292825] text-[#C9A45C] border border-[#C9A45C]/40 text-[9px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-md">
+            Vault Master
+          </span>
+        )}
+      </div>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleWishlist(product);
+        }}
+        className="absolute top-3 right-3 z-10 p-2 rounded-full bg-[#FFFDF8]/80 hover:bg-[#FFFDF8] text-[#292825] shadow-md transition-transform duration-200 hover:scale-110"
+        title="Save to Wishlist"
+      >
+        <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-[#C9A45C] text-[#C9A45C]' : 'text-[#292825]'}`} />
+      </button>
+
+      {/* Image Container with Hover Zoom */}
+      <div
+        onClick={() => onViewDetails(product)}
+        className="cursor-pointer relative h-64 sm:h-72 w-full bg-[#F7F3EA] overflow-hidden flex items-center justify-center p-6"
+      >
+        <img
+          src={product.images[0]}
+          alt={product.name}
+          className="max-h-full max-w-full object-contain transition-transform duration-700 ease-out group-hover:scale-110"
+          loading="lazy"
+        />
+
+        {/* Quick View Overlay Button */}
+        <div className="absolute inset-0 bg-[#292825]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-3">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickView(product);
+            }}
+            className="bg-[#FFFDF8] hover:bg-[#C9A45C] text-[#292825] px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider shadow-lg transition-colors duration-200 flex items-center space-x-1.5"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>Quick View</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Content Info */}
+      <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+        <div>
+          <div className="flex items-center justify-between text-xs text-[#292825]/60 mb-1">
+            <span className="uppercase tracking-widest font-semibold text-[#C9A45C]">{product.brand}</span>
+            <span className="text-[10px] bg-[#E8E6E1]/60 px-2 py-0.5 rounded text-[#292825]/80">{product.category}</span>
+          </div>
+
+          <h3
+            onClick={() => onViewDetails(product)}
+            className="cursor-pointer font-serif text-sm font-bold text-[#292825] line-clamp-2 hover:text-[#C9A45C] transition-colors leading-snug"
+          >
+            {product.name}
+          </h3>
+
+          {/* Rating */}
+          <div className="flex items-center space-x-1 mt-2">
+            <div className="flex text-[#C9A45C]">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-3.5 h-3.5 ${
+                    i < Math.floor(product.rating) ? 'fill-[#C9A45C]' : 'text-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-xs font-semibold text-[#292825] ml-1">{product.rating}</span>
+            <span className="text-[11px] text-[#292825]/50">({product.reviewsCount})</span>
+          </div>
+        </div>
+
+        {/* Pricing & Stock */}
+        <div className="pt-2 border-t border-[#E8E6E1]/60">
+          <div className="flex items-baseline space-x-2">
+            <span className="font-sans font-bold text-base text-[#292825]">
+              {formatINR(product.price)}
+            </span>
+            {product.originalPrice > product.price && (
+              <span className="text-xs text-[#292825]/40 line-through">
+                {formatINR(product.originalPrice)}
+              </span>
+            )}
+          </div>
+
+          <div className="mt-1 flex items-center justify-between text-[11px]">
+            {product.stock > 0 ? (
+              <span className="text-emerald-700 font-medium flex items-center space-x-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                <span>{product.stock <= 3 ? `Only ${product.stock} left in stock` : 'In Stock'}</span>
+              </span>
+            ) : (
+              <span className="text-rose-600 font-medium">Out of Stock</span>
+            )}
+          </div>
+        </div>
+
+        {/* Primary Card Actions */}
+        <div className="grid grid-cols-2 gap-2 pt-2">
+          {product.stock > 0 ? (
+            <>
+              <button
+                onClick={() => onAddToCart(product)}
+                className="bg-[#292825] hover:bg-[#C9A45C] hover:text-[#292825] text-[#F7F3EA] py-2.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1"
+              >
+                <ShoppingBag className="w-3.5 h-3.5" />
+                <span>Add to Cart</span>
+              </button>
+              <button
+                onClick={() => onBuyNow(product)}
+                className="bg-[#C9A45C] hover:bg-[#b08c47] text-[#292825] py-2.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center"
+              >
+                Buy Now
+              </button>
+            </>
+          ) : (
+            <button
+              disabled
+              className="col-span-2 bg-gray-200 text-gray-500 py-2.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider cursor-not-allowed text-center"
+            >
+              Notify When Available
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ProductDetailPage = ({ product, onAddToCart, onBuyNow, onToggleWishlist, isWishlisted, onBack, onAddReview }) => {
+  const [selectedImg, setSelectedImg] = useState(product.images[0]);
+  const [quantity, setQuantity] = useState(1);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewName, setReviewName] = useState('');
+  const [reviewComment, setReviewComment] = useState('');
+
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+    if (!reviewName || !reviewComment) return;
+    onAddReview(product.id, {
+      author: reviewName,
+      rating: reviewRating,
+      comment: reviewComment,
+      date: 'Just now'
+    });
+    setReviewName('');
+    setReviewComment('');
+  };
+
+  return (
+    <div className="bg-[#FFFDF8] py-10 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        
+        {/* Breadcrumb & Back button */}
+        <div className="flex items-center space-x-2 text-xs text-[#292825]/60">
+          <button onClick={onBack} className="hover:text-[#C9A45C] flex items-center space-x-1 font-semibold">
+            <ChevronLeft className="w-4 h-4" />
+            <span>Back to Catalog</span>
+          </button>
+          <span>/</span>
+          <span>{product.category}</span>
+          <span>/</span>
+          <span className="text-[#292825] font-medium truncate">{product.name}</span>
+        </div>
+
+        {/* Main Product Layout Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          {/* Gallery Column (7 cols) */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="bg-[#F7F3EA] border border-[#E8E6E1] rounded-2xl p-8 flex items-center justify-center h-[420px] sm:h-[500px] relative overflow-hidden group">
+              <img
+                src={selectedImg}
+                alt={product.name}
+                className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-125 cursor-zoom-in"
+              />
+              <div className="absolute bottom-4 right-4 bg-[#292825]/70 text-[#F7F3EA] text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md">
+                Hover to Zoom
+              </div>
+            </div>
+
+            {/* Thumbnail Selector */}
+            <div className="flex space-x-4 overflow-x-auto pb-2">
+              {product.images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImg(img)}
+                  className={`flex-shrink-0 w-24 h-24 bg-[#F7F3EA] rounded-xl border-2 p-2 transition-all ${
+                    selectedImg === img ? 'border-[#C9A45C] scale-105' : 'border-[#E8E6E1] opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img} alt="Thumbnail" className="w-full h-full object-contain" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Details Column (5 cols) */}
+          <div className="lg:col-span-5 space-y-6">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#C9A45C]">
+                {product.brand}
+              </span>
+              <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#292825] mt-1 leading-snug">
+                {product.name}
+              </h1>
+              <div className="flex items-center space-x-3 mt-3">
+                <div className="flex text-[#C9A45C]">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-[#C9A45C]' : 'text-gray-300'}`}
+                    />
+                  ))}
+                </div>
+                <span className="text-sm font-semibold text-[#292825]">{product.rating}</span>
+                <span className="text-xs text-[#292825]/50">({product.reviewsCount} customer reviews)</span>
+              </div>
+            </div>
+
+            {/* Price section */}
+            <div className="p-4 bg-[#F7F3EA] rounded-xl border border-[#E8E6E1] flex items-center justify-between">
+              <div>
+                <div className="flex items-baseline space-x-3">
+                  <span className="text-2xl font-bold text-[#292825] font-sans">{formatINR(product.price)}</span>
+                  {product.originalPrice > product.price && (
+                    <span className="text-sm text-[#292825]/50 line-through">{formatINR(product.originalPrice)}</span>
+                  )}
+                </div>
+                <p className="text-[11px] text-[#292825]/70 mt-0.5">Inclusive of all local taxes & GST 18%</p>
+              </div>
+              {product.discount > 0 && (
+                <span className="bg-[#C9A45C] text-[#292825] font-bold text-xs uppercase tracking-wider px-3 py-1.5 rounded-lg">
+                  Save {product.discount}%
+                </span>
+              )}
+            </div>
+
+            <p className="text-sm text-[#292825]/80 font-light leading-relaxed">
+              {product.description}
+            </p>
+
+            {/* Quantity & CTAs */}
+            <div className="space-y-4 pt-2 border-t border-[#E8E6E1]">
+              <div className="flex items-center space-x-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-[#292825]">Quantity:</span>
+                <div className="flex items-center border border-[#E8E6E1] rounded-lg bg-[#F7F3EA]">
+                  <button
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="p-2 text-[#292825] hover:text-[#C9A45C]"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="px-4 text-sm font-bold">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                    className="p-2 text-[#292825] hover:text-[#C9A45C]"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                <span className="text-xs text-emerald-700 font-medium">{product.stock} available</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  onClick={() => onAddToCart(product, quantity)}
+                  className="w-full bg-[#292825] hover:bg-[#C9A45C] hover:text-[#292825] text-[#F7F3EA] py-3.5 rounded-xl font-bold text-xs uppercase tracking-[0.15em] transition-all flex items-center justify-center space-x-2"
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  <span>Add to Vault Cart</span>
+                </button>
+                <button
+                  onClick={() => onBuyNow(product, quantity)}
+                  className="w-full bg-[#C9A45C] hover:bg-[#b08c47] text-[#292825] py-3.5 rounded-xl font-bold text-xs uppercase tracking-[0.15em] transition-all shadow-lg"
+                >
+                  Express Checkout
+                </button>
+              </div>
+
+              <button
+                onClick={() => onToggleWishlist(product)}
+                className="w-full border border-[#E8E6E1] hover:border-[#C9A45C] text-[#292825] py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center space-x-2 transition-colors"
+              >
+                <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-[#C9A45C] text-[#C9A45C]' : ''}`} />
+                <span>{isWishlisted ? 'Saved in Wishlist' : 'Add to Vault Wishlist'}</span>
+              </button>
+            </div>
+
+            {/* Quick Specs Overview Table */}
+            <div className="bg-[#F7F3EA] p-5 rounded-xl border border-[#E8E6E1] space-y-3 text-xs">
+              <h4 className="font-serif font-bold uppercase tracking-wider text-[#292825] border-b border-[#E8E6E1] pb-2">
+                Horology Specifications
+              </h4>
+              <div className="grid grid-cols-2 gap-y-2 text-[#292825]/80">
+                <div><span className="font-semibold text-[#292825]">SKU:</span> {product.sku}</div>
+                <div><span className="font-semibold text-[#292825]">Movement:</span> {product.movement}</div>
+                <div><span className="font-semibold text-[#292825]">Case Material:</span> {product.material}</div>
+                <div><span className="font-semibold text-[#292825]">Strap:</span> {product.strap}</div>
+                <div><span className="font-semibold text-[#292825]">Water Resistance:</span> {product.waterResistance}</div>
+                <div><span className="font-semibold text-[#292825]">Warranty:</span> {product.warranty}</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Customer Reviews Section */}
+        <div className="border-t border-[#E8E6E1] pt-10 space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="font-serif text-2xl font-bold text-[#292825]">Customer Ratings & Reviews</h3>
+              <p className="text-xs text-[#292825]/60 mt-1">Verified buyer testimonials and collector remarks</p>
+            </div>
+          </div>
+
+          {/* Submit Review Form */}
+          <form onSubmit={handleReviewSubmit} className="bg-[#F7F3EA] p-6 rounded-xl border border-[#E8E6E1] space-y-4">
+            <h4 className="font-serif text-sm font-bold uppercase tracking-wider text-[#292825]">
+              Write a Verified Review
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-[#292825] mb-1">Your Full Name</label>
+                <input
+                  type="text"
+                  required
+                  value={reviewName}
+                  onChange={(e) => setReviewName(e.target.value)}
+                  placeholder="e.g. Vikramaditya Rao"
+                  className="w-full bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-[#C9A45C] outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[#292825] mb-1">Rating</label>
+                <select
+                  value={reviewRating}
+                  onChange={(e) => setReviewRating(Number(e.target.value))}
+                  className="w-full bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-[#C9A45C] outline-none"
+                >
+                  <option value={5}>5 Stars - Outstanding Horology</option>
+                  <option value={4}>4 Stars - Great Quality</option>
+                  <option value={3}>3 Stars - Average</option>
+                  <option value={2}>2 Stars - Below Expectation</option>
+                  <option value={1}>1 Star - Unsatisfactory</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-[#292825] mb-1">Review Comments</label>
+              <textarea
+                required
+                rows={3}
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                placeholder="Share your experience regarding timekeeping accuracy, finish, and packaging..."
+                className="w-full bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-[#C9A45C] outline-none"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-[#292825] hover:bg-[#C9A45C] hover:text-[#292825] text-[#F7F3EA] px-6 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors"
+            >
+              Post Review
+            </button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CartDrawer = ({ isOpen, onClose, cart, onUpdateQty, onRemoveItem, onProceedToCheckout, couponCode, setCouponCode, appliedCoupon, onApplyCoupon, onRemoveCoupon }) => {
+  if (!isOpen) return null;
+
+  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const discountAmount = appliedCoupon
+    ? Math.min(Math.round((subtotal * appliedCoupon.discountPercent) / 100), appliedCoupon.maxDiscount || Infinity)
+    : 0;
+  const taxableSubtotal = Math.max(0, subtotal - discountAmount);
+  const gstAmount = Math.round(taxableSubtotal * 0.18);
+  const shippingFee = subtotal > 10000 || cart.length === 0 ? 0 : 500;
+  const grandTotal = taxableSubtotal + gstAmount + shippingFee;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-hidden">
+      <div onClick={onClose} className="absolute inset-0 bg-[#292825]/60 backdrop-blur-sm transition-opacity" />
+
+      <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
+        <div className="w-screen max-w-md bg-[#FFFDF8] shadow-2xl flex flex-col justify-between border-l border-[#E8E6E1]">
+          
+          {/* Header */}
+          <div className="p-6 bg-[#292825] text-[#F7F3EA] flex items-center justify-between border-b border-[#C9A45C]/30">
+            <div className="flex items-center space-x-3">
+              <ShoppingBag className="w-5 h-5 text-[#C9A45C]" />
+              <h2 className="font-serif text-lg font-bold tracking-wider">YOUR VAULT CART</h2>
+            </div>
+            <button onClick={onClose} className="text-[#E8E6E1] hover:text-[#C9A45C]">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Item List */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-4 divide-y divide-[#E8E6E1]">
+            {cart.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-12">
+                <div className="w-16 h-16 rounded-full bg-[#F7F3EA] flex items-center justify-center text-[#292825]/40">
+                  <ShoppingBag className="w-8 h-8" />
+                </div>
+                <h3 className="font-serif text-lg font-bold text-[#292825]">YOUR VAULT IS EMPTY</h3>
+                <p className="text-xs text-[#292825]/60 max-w-xs">
+                  Discover an exceptional timepiece worthy of your heritage collection.
+                </p>
+              </div>
+            ) : (
+              cart.map((item) => (
+                <div key={item.id} className="pt-4 first:pt-0 flex space-x-4">
+                  <img src={item.images[0]} alt={item.name} className="w-20 h-20 bg-[#F7F3EA] rounded-lg object-contain p-2 border border-[#E8E6E1]" />
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-[#C9A45C]">{item.brand}</span>
+                      <h4 className="font-serif text-xs font-bold text-[#292825] line-clamp-1">{item.name}</h4>
+                      <div className="text-xs font-bold text-[#292825] mt-1">{formatINR(item.price)}</div>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center border border-[#E8E6E1] rounded bg-[#F7F3EA]">
+                        <button onClick={() => onUpdateQty(item.id, item.quantity - 1)} className="p-1 hover:text-[#C9A45C]">
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="px-2 text-xs font-bold">{item.quantity}</span>
+                        <button onClick={() => onUpdateQty(item.id, item.quantity + 1)} className="p-1 hover:text-[#C9A45C]">
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+
+                      <button onClick={() => onRemoveItem(item.id)} className="text-xs text-rose-600 hover:underline flex items-center space-x-1">
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Remove</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Summary Footer */}
+          {cart.length > 0 && (
+            <div className="p-6 bg-[#F7F3EA] border-t border-[#E8E6E1] space-y-4">
+              
+              {/* Coupon Box */}
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  placeholder="Enter Coupon Code (e.g. VAULT10)"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  className="flex-1 bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg px-3 py-2 text-xs uppercase font-medium outline-none focus:border-[#C9A45C]"
+                />
+                {appliedCoupon ? (
+                  <button onClick={onRemoveCoupon} className="bg-rose-600 text-white px-3 py-2 rounded-lg text-xs font-semibold">
+                    Remove
+                  </button>
+                ) : (
+                  <button onClick={onApplyCoupon} className="bg-[#292825] text-[#C9A45C] px-4 py-2 rounded-lg text-xs font-semibold uppercase">
+                    Apply
+                  </button>
+                )}
+              </div>
+
+              {appliedCoupon && (
+                <div className="text-[11px] text-emerald-700 font-semibold flex items-center justify-between">
+                  <span>Coupon ({appliedCoupon.code}) Applied</span>
+                  <span>-{formatINR(discountAmount)}</span>
+                </div>
+              )}
+
+              {/* Price Breakdown */}
+              <div className="space-y-1.5 text-xs text-[#292825]/80 border-t border-[#E8E6E1] pt-3">
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span className="font-semibold text-[#292825]">{formatINR(subtotal)}</span>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-emerald-700">
+                    <span>Discount:</span>
+                    <span>-{formatINR(discountAmount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span>GST (18% Statutory):</span>
+                  <span className="font-semibold text-[#292825]">{formatINR(gstAmount)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Insured Express Shipping:</span>
+                  <span>{shippingFee === 0 ? <span className="text-emerald-700 font-semibold">FREE</span> : formatINR(shippingFee)}</span>
+                </div>
+                <div className="flex justify-between text-sm font-bold text-[#292825] border-t border-[#E8E6E1] pt-2">
+                  <span>Grand Total (INR):</span>
+                  <span className="text-[#C9A45C]">{formatINR(grandTotal)}</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  onClose();
+                  onProceedToCheckout();
+                }}
+                className="w-full bg-[#C9A45C] hover:bg-[#b08c47] text-[#292825] py-3.5 rounded-xl font-bold text-xs uppercase tracking-[0.15em] shadow-lg transition-all flex items-center justify-center space-x-2"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Proceed to Secure Checkout</span>
+              </button>
+            </div>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CheckoutPage = ({ cart, appliedCoupon, onOrderSuccess, onBackToCart }) => {
+  const [formData, setFormData] = useState({
+    fullName: 'Aarav Sharma',
+    email: 'aarav.sharma@example.com',
+    phone: '+91 98765 43210',
+    address: '42, Heritage Enclave, Golf Course Road',
+    city: 'Gurugram',
+    state: 'Haryana',
+    pincode: '122002',
+    country: 'India'
+  });
+
+  const [paymentMethod, setPaymentMethod] = useState('upi');
+
+  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const discountAmount = appliedCoupon
+    ? Math.min(Math.round((subtotal * appliedCoupon.discountPercent) / 100), appliedCoupon.maxDiscount || Infinity)
+    : 0;
+  const taxableSubtotal = Math.max(0, subtotal - discountAmount);
+  const gstAmount = Math.round(taxableSubtotal * 0.18);
+  const shippingFee = subtotal > 10000 ? 0 : 500;
+  const grandTotal = taxableSubtotal + gstAmount + shippingFee;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newOrder = {
+      id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: new Date().toISOString().split('T')[0],
+      customerName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`,
+      items: cart,
+      subtotal,
+      discount: discountAmount,
+      gst: gstAmount,
+      shipping: shippingFee,
+      grandTotal,
+      paymentMethod: paymentMethod.toUpperCase(),
+      paymentStatus: paymentMethod === 'cod' ? 'Pending' : 'Paid',
+      orderStatus: 'Order Placed',
+      timeline: [
+        { label: 'Order Placed', time: 'Just Now', completed: true },
+        { label: 'Payment Confirmed', time: 'Processing', completed: paymentMethod !== 'cod' },
+        { label: 'Processing', time: 'Pending', completed: false },
+        { label: 'Packed', time: 'Pending', completed: false },
+        { label: 'Shipped', time: 'Pending', completed: false },
+        { label: 'Out for Delivery', time: 'Pending', completed: false },
+        { label: 'Delivered', time: 'Pending', completed: false }
+      ]
+    };
+    onOrderSuccess(newOrder);
+  };
+
+  return (
+    <div className="bg-[#FFFDF8] py-10 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <button onClick={onBackToCart} className="text-xs text-[#292825]/60 hover:text-[#C9A45C] flex items-center space-x-1 font-semibold">
+          <ChevronLeft className="w-4 h-4" />
+          <span>Return to Cart</span>
+        </button>
+
+        <h1 className="font-serif text-3xl font-bold text-[#292825]">EXPRESS SECURE CHECKOUT</h1>
+
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          {/* Customer Address & Payment (7 cols) */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="bg-[#F7F3EA] p-6 rounded-2xl border border-[#E8E6E1] space-y-4">
+              <h3 className="font-serif text-base font-bold uppercase tracking-wider text-[#292825]">
+                1. Delivery Address & Contact
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label className="block text-[#292825] font-semibold mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    className="w-full bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg p-2.5 outline-none focus:border-[#C9A45C]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#292825] font-semibold mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg p-2.5 outline-none focus:border-[#C9A45C]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#292825] font-semibold mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg p-2.5 outline-none focus:border-[#C9A45C]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#292825] font-semibold mb-1">Pincode</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.pincode}
+                    onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                    className="w-full bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg p-2.5 outline-none focus:border-[#C9A45C]"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-[#292825] font-semibold mb-1">Street Address</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    className="w-full bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg p-2.5 outline-none focus:border-[#C9A45C]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#292825] font-semibold mb-1">City</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    className="w-full bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg p-2.5 outline-none focus:border-[#C9A45C]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#292825] font-semibold mb-1">State</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.state}
+                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                    className="w-full bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg p-2.5 outline-none focus:border-[#C9A45C]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Method Selector */}
+            <div className="bg-[#F7F3EA] p-6 rounded-2xl border border-[#E8E6E1] space-y-4">
+              <h3 className="font-serif text-base font-bold uppercase tracking-wider text-[#292825]">
+                2. Select Luxury Gateway
+              </h3>
+              <div className="space-y-3 text-xs">
+                {[
+                  { id: 'upi', label: 'UPI Express (GPay, PhonePe, Paytm)', desc: 'Instant 256-bit encrypted bank transfer' },
+                  { id: 'card', label: 'Credit / Debit Card (Razorpay Verified)', desc: 'Visa, Mastercard, Amex, Diners Club' },
+                  { id: 'netbanking', label: 'Net Banking (HDFC, ICICI, Axis, SBI)', desc: 'Direct corporate & personal banking link' },
+                  { id: 'cod', label: 'Cash / Card on Delivery', desc: 'Pay via OTP verification upon insured courier delivery' }
+                ].map((m) => (
+                  <label
+                    key={m.id}
+                    className={`flex items-start space-x-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
+                      paymentMethod === m.id ? 'bg-[#FFFDF8] border-[#C9A45C] shadow-sm' : 'border-[#E8E6E1] hover:bg-[#FFFDF8]/50'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      checked={paymentMethod === m.id}
+                      onChange={() => setPaymentMethod(m.id)}
+                      className="mt-0.5 text-[#C9A45C] focus:ring-[#C9A45C]"
+                    />
+                    <div>
+                      <div className="font-bold text-[#292825]">{m.label}</div>
+                      <div className="text-[11px] text-[#292825]/60 mt-0.5">{m.desc}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Order Summary Sidebar (5 cols) */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="bg-[#292825] text-[#F7F3EA] p-6 rounded-2xl border border-[#C9A45C]/30 space-y-4 shadow-xl">
+              <h3 className="font-serif text-base font-bold uppercase tracking-wider text-[#C9A45C] border-b border-[#C9A45C]/20 pb-3">
+                Order Review ({cart.length} items)
+              </h3>
+
+              <div className="space-y-3 max-h-60 overflow-y-auto pr-1 divide-y divide-[#E8E6E1]/10">
+                {cart.map((item) => (
+                  <div key={item.id} className="pt-2 first:pt-0 flex justify-between items-center text-xs">
+                    <div>
+                      <div className="font-bold text-[#FFFDF8]">{item.name}</div>
+                      <div className="text-[11px] text-[#E8E6E1]/60">Qty: {item.quantity} x {formatINR(item.price)}</div>
+                    </div>
+                    <div className="font-bold text-[#C9A45C]">{formatINR(item.price * item.quantity)}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tax Itemization */}
+              <div className="border-t border-[#C9A45C]/20 pt-4 space-y-2 text-xs text-[#E8E6E1]/80">
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span>{formatINR(subtotal)}</span>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-emerald-400">
+                    <span>Discount:</span>
+                    <span>-{formatINR(discountAmount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span>GST Statutory (18%):</span>
+                  <span>{formatINR(gstAmount)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Insured Express Delivery:</span>
+                  <span>{shippingFee === 0 ? <span className="text-emerald-400">FREE</span> : formatINR(shippingFee)}</span>
+                </div>
+                <div className="flex justify-between text-base font-bold text-[#FFFDF8] border-t border-[#C9A45C]/30 pt-3">
+                  <span>Grand Total:</span>
+                  <span className="text-[#C9A45C]">{formatINR(grandTotal)}</span>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-[#C9A45C] hover:bg-[#b08c47] text-[#292825] py-4 rounded-xl font-bold text-xs uppercase tracking-[0.2em] transition-all shadow-xl"
+              >
+                Confirm & Place Order
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const InvoiceModal = ({ order, onClose }) => {
+  if (!order) return null;
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#292825]/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="bg-[#FFFDF8] max-w-3xl w-full rounded-2xl shadow-2xl border border-[#E8E6E1] overflow-hidden my-8">
+        
+        {/* Actions bar */}
+        <div className="bg-[#292825] text-[#F7F3EA] px-6 py-4 flex items-center justify-between border-b border-[#C9A45C]/30 print:hidden">
+          <span className="font-serif text-sm font-bold tracking-wider text-[#C9A45C]">
+            OFFICIAL TAX INVOICE
+          </span>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={handlePrint}
+              className="bg-[#C9A45C] hover:bg-[#b08c47] text-[#292825] px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Print / Download PDF</span>
+            </button>
+            <button onClick={onClose} className="text-[#E8E6E1] hover:text-[#C9A45C]">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Printable Area */}
+        <div className="p-8 sm:p-10 space-y-8 text-[#292825]" id="printable-invoice">
+          
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#E8E6E1] pb-6 gap-4">
+            <div>
+              <h2 className="font-serif font-bold text-xl tracking-[0.2em] text-[#292825]">
+                THE GRAND HOROLOGY VAULT
+              </h2>
+              <p className="text-[10px] text-[#292825]/60 uppercase tracking-widest mt-0.5">
+                GSTIN: 27AABCT1234H1Z5 • REGISTERED LUXURY RETAILER
+              </p>
+              <p className="text-xs text-[#292825]/70 mt-1">
+                Vault House, 108 Heritage Galleria, Bandra West, Mumbai, MH - 400050
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="bg-[#F7F3EA] border border-[#C9A45C]/40 px-3 py-1 rounded text-xs font-mono font-bold text-[#C9A45C]">
+                INVOICE #{order.id}
+              </div>
+              <p className="text-xs text-[#292825]/60 mt-1">Date: {order.date}</p>
+            </div>
+          </div>
+
+          {/* Customer & Shipping Info */}
+          <div className="grid grid-cols-2 gap-6 text-xs bg-[#F7F3EA] p-4 rounded-xl border border-[#E8E6E1]">
+            <div>
+              <h4 className="font-bold text-[#292825] uppercase tracking-wider mb-1">Billed & Shipped To:</h4>
+              <p className="font-semibold text-sm">{order.customerName}</p>
+              <p className="text-[#292825]/80 mt-0.5">{order.address}</p>
+              <p className="text-[#292825]/80 mt-0.5">Email: {order.email}</p>
+              <p className="text-[#292825]/80">Phone: {order.phone}</p>
+            </div>
+            <div>
+              <h4 className="font-bold text-[#292825] uppercase tracking-wider mb-1">Payment & Status:</h4>
+              <p><span className="font-semibold">Method:</span> {order.paymentMethod}</p>
+              <p><span className="font-semibold">Payment Status:</span> <span className="text-emerald-700 font-bold">{order.paymentStatus}</span></p>
+              <p><span className="font-semibold">Fulfillment:</span> {order.orderStatus}</p>
+            </div>
+          </div>
+
+          {/* Table */}
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="border-b border-[#292825] font-bold uppercase tracking-wider text-[#292825]">
+                <th className="py-2">Item Description</th>
+                <th className="py-2 text-center">Qty</th>
+                <th className="py-2 text-right">Unit Price</th>
+                <th className="py-2 text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#E8E6E1]">
+              {order.items.map((item, idx) => (
+                <tr key={idx}>
+                  <td className="py-3">
+                    <span className="font-bold block">{item.name}</span>
+                    <span className="text-[10px] text-[#292825]/60">Brand: {item.brand} | SKU: {item.id}</span>
+                  </td>
+                  <td className="py-3 text-center font-semibold">{item.quantity}</td>
+                  <td className="py-3 text-right">{formatINR(item.price)}</td>
+                  <td className="py-3 text-right font-bold">{formatINR(item.price * item.quantity)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Breakdown */}
+          <div className="flex justify-end border-t border-[#E8E6E1] pt-4">
+            <div className="w-64 space-y-1.5 text-xs">
+              <div className="flex justify-between text-[#292825]/80">
+                <span>Subtotal:</span>
+                <span>{formatINR(order.subtotal)}</span>
+              </div>
+              {order.discount > 0 && (
+                <div className="flex justify-between text-emerald-700 font-medium">
+                  <span>Discount:</span>
+                  <span>-{formatINR(order.discount)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-[#292825]/80">
+                <span>GST (18% Statutory):</span>
+                <span>{formatINR(order.gst)}</span>
+              </div>
+              <div className="flex justify-between text-[#292825]/80">
+                <span>Insured Freight:</span>
+                <span>{order.shipping === 0 ? 'FREE' : formatINR(order.shipping)}</span>
+              </div>
+              <div className="flex justify-between font-bold text-sm text-[#292825] border-t border-[#292825] pt-2">
+                <span>Grand Total:</span>
+                <span className="text-[#C9A45C]">{formatINR(order.grandTotal)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center text-[10px] text-[#292825]/50 border-t border-[#E8E6E1] pt-4">
+            This is a computer-generated luxury tax invoice issued by THE GRAND HOROLOGY VAULT. All timepieces are backed by serial-matched authenticity certificates.
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AccountDashboard = ({ user, orders, wishlist, onSelectOrderForInvoice }) => {
+  const [activeTab, setActiveTab] = useState('orders');
+
+  return (
+    <div className="bg-[#FFFDF8] py-10 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        {/* Profile Banner */}
+        <div className="bg-[#292825] text-[#F7F3EA] p-8 rounded-2xl border border-[#C9A45C]/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="flex items-center space-x-5">
+            <div className="w-16 h-16 rounded-full bg-[#C9A45C] text-[#292825] font-serif text-2xl font-bold flex items-center justify-center">
+              {user.name.charAt(0)}
+            </div>
+            <div>
+              <h1 className="font-serif text-2xl font-bold">{user.name}</h1>
+              <p className="text-xs text-[#E8E6E1]/70">{user.email} • Vault Private Member</p>
+            </div>
+          </div>
+          <div className="bg-[#C9A45C]/10 border border-[#C9A45C]/40 px-4 py-2 rounded-xl text-center">
+            <span className="text-[10px] uppercase tracking-widest text-[#C9A45C] block">Tier Status</span>
+            <span className="font-serif text-sm font-bold text-[#FFFDF8]">HOROLOGY VIP COLLECTOR</span>
+          </div>
+        </div>
+
+        {/* Tab Buttons */}
+        <div className="flex space-x-4 border-b border-[#E8E6E1] pb-2">
+          {['orders', 'wishlist', 'settings'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`text-xs uppercase tracking-widest font-bold py-2 px-4 rounded-lg transition-all ${
+                activeTab === tab
+                  ? 'bg-[#C9A45C] text-[#292825]'
+                  : 'text-[#292825]/60 hover:text-[#292825] hover:bg-[#F7F3EA]'
+              }`}
+            >
+              {tab === 'orders' ? `Orders (${orders.length})` : tab === 'wishlist' ? `Wishlist (${wishlist.length})` : 'Profile Settings'}
+            </button>
+          ))}
+        </div>
+
+        {/* Orders View */}
+        {activeTab === 'orders' && (
+          <div className="space-y-6">
+            {orders.length === 0 ? (
+              <div className="p-8 text-center text-xs text-[#292825]/60 bg-[#F7F3EA] rounded-xl border border-[#E8E6E1]">
+                No order history recorded yet.
+              </div>
+            ) : (
+              orders.map((ord) => (
+                <div key={ord.id} className="bg-[#FFFDF8] border border-[#E8E6E1] rounded-2xl p-6 space-y-6 shadow-sm">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#E8E6E1] pb-4 gap-2">
+                    <div>
+                      <span className="font-mono font-bold text-sm text-[#C9A45C]">{ord.id}</span>
+                      <span className="text-xs text-[#292825]/60 ml-3">Placed on {ord.date}</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase">
+                        {ord.orderStatus}
+                      </span>
+                      <button
+                        onClick={() => onSelectOrderForInvoice(ord)}
+                        className="bg-[#292825] hover:bg-[#C9A45C] hover:text-[#292825] text-[#F7F3EA] text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>View Invoice</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Items */}
+                  <div className="space-y-3">
+                    {ord.items.map((it, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-xs">
+                        <div>
+                          <span className="font-bold text-[#292825]">{it.name}</span>
+                          <span className="text-[#292825]/50 ml-2">Qty: {it.quantity}</span>
+                        </div>
+                        <span className="font-bold">{formatINR(it.price * it.quantity)}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Order Tracking Timeline */}
+                  <div className="bg-[#F7F3EA] p-4 rounded-xl border border-[#E8E6E1]">
+                    <h4 className="font-serif text-xs font-bold uppercase tracking-wider text-[#292825] mb-3">
+                      Live Delivery Progress
+                    </h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2 text-center">
+                      {ord.timeline.map((step, idx) => (
+                        <div key={idx} className="flex flex-col items-center">
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold mb-1 ${
+                            step.completed ? 'bg-[#C9A45C] text-[#292825]' : 'bg-gray-200 text-gray-400'
+                          }`}>
+                            {step.completed ? '✓' : idx + 1}
+                          </div>
+                          <span className="text-[10px] font-bold text-[#292825] line-clamp-1">{step.label}</span>
+                          <span className="text-[9px] text-[#292825]/50">{step.time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+};
+
+const AdminDashboard = ({ products, orders, coupons, onUpdateStock, onAddProduct, onDeleteProduct }) => {
+  const [activeAdminTab, setActiveAdminTab] = useState('stats');
+  const [newProd, setNewProd] = useState({
+    name: '',
+    brand: 'Rolex',
+    category: 'Watches for Men',
+    price: 50000,
+    stock: 10,
+    sku: 'NEW-SKU-01',
+    description: 'Luxury timepiece addition.',
+    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1000'
+  });
+
+  const totalRevenue = orders.reduce((acc, o) => acc + o.grandTotal, 0);
+
+  const handleAddSubmit = (e) => {
+    e.preventDefault();
+    onAddProduct({
+      ...newProd,
+      id: `WAT-ADM-${Math.floor(100 + Math.random() * 900)}`,
+      originalPrice: newProd.price * 1.1,
+      discount: 10,
+      images: [newProd.image],
+      rating: 5.0,
+      reviewsCount: 1,
+      availability: 'In Stock',
+      material: 'Stainless Steel',
+      movement: 'Automatic Movement',
+      strap: 'Leather Strap',
+      waterResistance: '50m',
+      warranty: '2 Years'
+    });
+    setNewProd({
+      name: '',
+      brand: 'Rolex',
+      category: 'Watches for Men',
+      price: 50000,
+      stock: 10,
+      sku: `NEW-SKU-${Math.floor(100 + Math.random() * 900)}`,
+      description: 'Luxury timepiece addition.',
+      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1000'
+    });
+  };
+
+  return (
+    <div className="bg-[#FFFDF8] py-10 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        <div className="flex justify-between items-center bg-[#292825] text-[#F7F3EA] p-6 rounded-2xl border border-[#C9A45C]/30">
+          <div>
+            <h1 className="font-serif text-2xl font-bold text-[#C9A45C]">VAULT ADMIN DASHBOARD</h1>
+            <p className="text-xs text-[#E8E6E1]/70">Store Operations & Horology Inventory Control</p>
+          </div>
+        </div>
+
+        {/* KPIs */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-[#F7F3EA] p-5 rounded-xl border border-[#E8E6E1]">
+            <span className="text-[10px] uppercase font-bold text-[#292825]/60">Total Store Sales</span>
+            <div className="font-serif text-2xl font-bold text-[#C9A45C] mt-1">{formatINR(totalRevenue)}</div>
+          </div>
+          <div className="bg-[#F7F3EA] p-5 rounded-xl border border-[#E8E6E1]">
+            <span className="text-[10px] uppercase font-bold text-[#292825]/60">Total Orders</span>
+            <div className="font-serif text-2xl font-bold text-[#292825] mt-1">{orders.length}</div>
+          </div>
+          <div className="bg-[#F7F3EA] p-5 rounded-xl border border-[#E8E6E1]">
+            <span className="text-[10px] uppercase font-bold text-[#292825]/60">Active Products</span>
+            <div className="font-serif text-2xl font-bold text-[#292825] mt-1">{products.length}</div>
+          </div>
+          <div className="bg-[#F7F3EA] p-5 rounded-xl border border-[#E8E6E1]">
+            <span className="text-[10px] uppercase font-bold text-[#292825]/60">Active Coupons</span>
+            <div className="font-serif text-2xl font-bold text-[#292825] mt-1">{coupons.length}</div>
+          </div>
+        </div>
+
+        {/* Tab Buttons */}
+        <div className="flex space-x-3 border-b border-[#E8E6E1] pb-2">
+          {['inventory', 'add-product', 'orders'].map((t) => (
+            <button
+              key={t}
+              onClick={() => setActiveAdminTab(t)}
+              className={`text-xs font-bold uppercase tracking-wider py-2 px-4 rounded-lg transition-all ${
+                activeAdminTab === t ? 'bg-[#292825] text-[#C9A45C]' : 'text-[#292825]/60 hover:bg-[#F7F3EA]'
+              }`}
+            >
+              {t === 'inventory' ? 'Inventory List' : t === 'add-product' ? '+ Add New Watch' : 'All Orders'}
+            </button>
+          ))}
+        </div>
+
+        {/* Inventory List Table */}
+        {activeAdminTab === 'inventory' && (
+          <div className="overflow-x-auto bg-[#FFFDF8] border border-[#E8E6E1] rounded-2xl shadow-sm">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-[#292825] text-[#F7F3EA] uppercase text-[10px]">
+                <tr>
+                  <th className="p-3">SKU / Watch</th>
+                  <th className="p-3">Brand</th>
+                  <th className="p-3">Category</th>
+                  <th className="p-3">Price</th>
+                  <th className="p-3">Stock Level</th>
+                  <th className="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E8E6E1]">
+                {products.map((p) => (
+                  <tr key={p.id}>
+                    <td className="p-3">
+                      <div className="font-bold text-[#292825]">{p.name}</div>
+                      <div className="text-[10px] font-mono text-[#292825]/50">{p.sku}</div>
+                    </td>
+                    <td className="p-3 font-semibold text-[#C9A45C]">{p.brand}</td>
+                    <td className="p-3">{p.category}</td>
+                    <td className="p-3 font-bold">{formatINR(p.price)}</td>
+                    <td className="p-3">
+                      <input
+                        type="number"
+                        min="0"
+                        value={p.stock}
+                        onChange={(e) => onUpdateStock(p.id, parseInt(e.target.value) || 0)}
+                        className="w-16 bg-[#F7F3EA] border border-[#E8E6E1] rounded p-1 font-bold text-center"
+                      />
+                    </td>
+                    <td className="p-3 text-right">
+                      <button
+                        onClick={() => onDeleteProduct(p.id)}
+                        className="text-rose-600 hover:underline text-[11px] font-bold"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Add Product Form */}
+        {activeAdminTab === 'add-product' && (
+          <form onSubmit={handleAddSubmit} className="bg-[#F7F3EA] p-6 rounded-2xl border border-[#E8E6E1] space-y-4 max-w-2xl">
+            <h3 className="font-serif text-base font-bold text-[#292825] uppercase tracking-wider">Add Watch to Vault Catalog</h3>
+            <div className="grid grid-cols-2 gap-4 text-xs">
+              <div>
+                <label className="block font-semibold text-[#292825] mb-1">Watch Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newProd.name}
+                  onChange={(e) => setNewProd({ ...newProd, name: e.target.value })}
+                  placeholder="e.g. Master Perpetual 40mm"
+                  className="w-full p-2.5 bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-[#292825] mb-1">Brand</label>
+                <input
+                  type="text"
+                  required
+                  value={newProd.brand}
+                  onChange={(e) => setNewProd({ ...newProd, brand: e.target.value })}
+                  className="w-full p-2.5 bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-[#292825] mb-1">Price (INR)</label>
+                <input
+                  type="number"
+                  required
+                  value={newProd.price}
+                  onChange={(e) => setNewProd({ ...newProd, price: Number(e.target.value) })}
+                  className="w-full p-2.5 bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-[#292825] mb-1">Stock Quantity</label>
+                <input
+                  type="number"
+                  required
+                  value={newProd.stock}
+                  onChange={(e) => setNewProd({ ...newProd, stock: Number(e.target.value) })}
+                  className="w-full p-2.5 bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg"
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="bg-[#292825] hover:bg-[#C9A45C] hover:text-[#292825] text-[#F7F3EA] px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors"
+            >
+              Publish to Vault
+            </button>
+          </form>
+        )}
+
+      </div>
+    </div>
+  );
+};
+
+const DealsPage = ({ products, onAddToCart, onBuyNow, onQuickView, onToggleWishlist, wishlist }) => {
+  const dealsProducts = products.filter((p) => p.discount > 8);
+
+  return (
+    <div className="bg-[#FFFDF8] py-10 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        <div className="bg-[#292825] text-[#F7F3EA] p-8 rounded-2xl border border-[#C9A45C]/30 text-center space-y-3">
+          <span className="text-xs uppercase tracking-[0.3em] text-[#C9A45C] font-bold">LIMITED HOROLOGY PROMOTIONS</span>
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold">EXCLUSIVE VAULT PRIVILEGES</h1>
+          <p className="text-xs text-[#E8E6E1]/80 max-w-xl mx-auto">
+            Enjoy exclusive seasonal savings on certified luxury timepieces. Authentic manufacturer warranty included.
+          </p>
+        </div>
+
+        {/* Promo Coupons Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {INITIAL_COUPONS.map((c) => (
+            <div key={c.code} className="bg-[#F7F3EA] border-2 border-dashed border-[#C9A45C] p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-[#C9A45C]">PROMO CODE</span>
+                <h3 className="font-mono text-xl font-bold text-[#292825] mt-1">{c.code}</h3>
+                <p className="text-xs text-[#292825]/70 mt-1">Get {c.discountPercent}% Off on orders above {formatINR(c.minSpend)}</p>
+              </div>
+              <div className="mt-4 text-[10px] text-[#292825]/50">Auto-applies at checkout</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Products Grid */}
+        <div className="space-y-4">
+          <h2 className="font-serif text-2xl font-bold text-[#292825]">Featured Discounted Timepieces</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {dealsProducts.map((p) => (
+              <ProductCard
+                key={p.id}
+                product={p}
+                onQuickView={onQuickView}
+                onAddToCart={onAddToCart}
+                onBuyNow={onBuyNow}
+                onToggleWishlist={onToggleWishlist}
+                isWishlisted={wishlist.some((item) => item.id === p.id)}
+                onViewDetails={() => {}}
+              />
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+const AboutPage = () => {
+  return (
+    <div className="bg-[#FFFDF8] py-12 min-h-screen">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        <div className="text-center space-y-4">
+          <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#C9A45C]">HERITAGE & CRAFTSMANSHIP</span>
+          <h1 className="font-serif text-4xl font-bold text-[#292825]">THE GRAND HOROLOGY VAULT</h1>
+          <p className="text-sm text-[#292825]/70 max-w-2xl mx-auto leading-relaxed">
+            Founded in Geneva in 1898 and expanding to South Asia in 2026, The Grand Horology Vault remains the premier destination for discerning collectors seeking certified luxury timepieces.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <img
+            src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=1000"
+            alt="Swiss Atelier"
+            className="rounded-2xl shadow-xl border border-[#E8E6E1]"
+          />
+          <div className="space-y-4 text-xs text-[#292825]/80 leading-relaxed">
+            <h3 className="font-serif text-xl font-bold text-[#292825]">Uncompromising Authenticity</h3>
+            <p>
+              Every timepiece within our vault undergoes rigorous 18-point horological inspection by master watchmakers prior to listing. We partner directly with authorized distributors and heritage ateliers.
+            </p>
+            <p>
+              Our mission is to preserve the art of mechanical timekeeping for future generations. When you acquire a watch from The Grand Horology Vault, you acquire a legacy.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ContactPage = ({ onShowToast }) => {
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onShowToast('Inquiry Received', 'Our Horology Concierge will respond within 2 business hours.');
+    setForm({ name: '', email: '', subject: '', message: '' });
+  };
+
+  return (
+    <div className="bg-[#FFFDF8] py-12 min-h-screen">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <div className="text-center space-y-2">
+          <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#C9A45C]">PRIVATE CONCIERGE</span>
+          <h1 className="font-serif text-3xl font-bold text-[#292825]">CONTACT THE VAULT</h1>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-[#F7F3EA] p-6 rounded-2xl border border-[#E8E6E1] space-y-4 text-xs text-[#292825]">
+            <h3 className="font-serif font-bold text-sm uppercase tracking-wider">Vault Headquarters</h3>
+            <p className="flex items-center space-x-2">
+              <MapPin className="w-4 h-4 text-[#C9A45C]" />
+              <span>108 Heritage Galleria, Bandra West, Mumbai - 400050</span>
+            </p>
+            <p className="flex items-center space-x-2">
+              <Phone className="w-4 h-4 text-[#C9A45C]" />
+              <span>+91 1800 888 1898 (Toll-Free)</span>
+            </p>
+            <p className="flex items-center space-x-2">
+              <Mail className="w-4 h-4 text-[#C9A45C]" />
+              <span>concierge@grandhorologyvault.com</span>
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="bg-[#F7F3EA] p-6 rounded-2xl border border-[#E8E6E1] space-y-4 text-xs">
+            <input
+              type="text"
+              required
+              placeholder="Your Name"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="w-full p-2.5 bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg"
+            />
+            <input
+              type="email"
+              required
+              placeholder="Your Email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="w-full p-2.5 bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg"
+            />
+            <textarea
+              required
+              rows={3}
+              placeholder="Message..."
+              value={form.message}
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+              className="w-full p-2.5 bg-[#FFFDF8] border border-[#E8E6E1] rounded-lg"
+            />
+            <button
+              type="submit"
+              className="w-full bg-[#292825] hover:bg-[#C9A45C] hover:text-[#292825] text-[#F7F3EA] py-3 rounded-xl font-bold uppercase tracking-wider transition-colors"
+            >
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Footer = ({ setActivePage }) => {
+  return (
+    <footer className="bg-[#292825] text-[#F7F3EA] pt-16 pb-8 border-t border-[#C9A45C]/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          
+          <div className="space-y-4">
+            <span className="font-serif font-bold text-lg text-[#FFFDF8] tracking-widest block">
+              THE GRAND HOROLOGY VAULT
+            </span>
+            <p className="text-xs text-[#E8E6E1]/70 leading-relaxed">
+              Curating certified authentic Swiss and fine horology timepieces since 1898. Where every second becomes a legacy.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-serif text-xs font-bold uppercase tracking-widest text-[#C9A45C] mb-4">Quick Links</h4>
+            <ul className="space-y-2 text-xs text-[#E8E6E1]/80">
+              <li><button onClick={() => setActivePage('home')} className="hover:text-[#C9A45C]">Home</button></li>
+              <li><button onClick={() => setActivePage('categories')} className="hover:text-[#C9A45C]">All Collections</button></li>
+              <li><button onClick={() => setActivePage('deals')} className="hover:text-[#C9A45C]">Deals & Offers</button></li>
+              <li><button onClick={() => setActivePage('about')} className="hover:text-[#C9A45C]">Heritage Story</button></li>
+              <li><button onClick={() => setActivePage('contact')} className="hover:text-[#C9A45C]">Contact Concierge</button></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-serif text-xs font-bold uppercase tracking-widest text-[#C9A45C] mb-4">Customer Care</h4>
+            <ul className="space-y-2 text-xs text-[#E8E6E1]/80">
+              <li>Insured Priority Courier</li>
+              <li>Authenticity Certificate</li>
+              <li>14-Day Return Guarantee</li>
+              <li>8-Year Global Warranty</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-serif text-xs font-bold uppercase tracking-widest text-[#C9A45C] mb-4">Newsletter</h4>
+            <p className="text-xs text-[#E8E6E1]/70 mb-3">Join for private preview access to limited allocations.</p>
+            <div className="flex">
+              <input type="email" placeholder="Enter email" className="bg-[#FFFDF8]/10 text-xs text-[#FFFDF8] px-3 py-2 rounded-l-lg outline-none flex-1 border border-[#C9A45C]/30" />
+              <button className="bg-[#C9A45C] text-[#292825] px-4 py-2 rounded-r-lg font-bold text-xs uppercase">Join</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div className="border-t border-[#E8E6E1]/10 pt-6 flex flex-col sm:flex-row justify-between items-center text-[11px] text-[#E8E6E1]/50 space-y-2 sm:space-y-0">
+          <div>© 2026 THE GRAND HOROLOGY VAULT. All rights reserved.</div>
+          <div className="space-x-4">
+            <span>Privacy Policy</span>
+            <span>Terms of Service</span>
+            <span>GST Declaration</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default function App() {
+  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+  const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [orders, setOrders] = useState(INITIAL_ORDERS);
+  const [coupons, setCoupons] = useState(INITIAL_COUPONS);
+  const [user, setUser] = useState({ name: 'Aarav Sharma', email: 'aarav.sharma@example.com' });
+
+  const [activePage, setActivePage] = useState('home');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState(null);
+
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowWelcomePopup(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const showToast = (title, message, type = 'success') => {
+    setToast({ title, message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  const handleAddToCart = (product, quantity = 1) => {
+    setCart((prevCart) => {
+      const existing = prevCart.find((item) => item.id === product.id);
+      if (existing) {
+        return prevCart.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+        );
+      }
+      return [...prevCart, { ...product, quantity }];
+    });
+    showToast('Added to Vault Cart', `${product.name} has been placed in your cart.`);
+  };
+
+  const handleBuyNow = (product, quantity = 1) => {
+    handleAddToCart(product, quantity);
+    setActivePage('checkout');
+  };
+
+  const handleToggleWishlist = (product) => {
+    setWishlist((prev) => {
+      const exists = prev.some((item) => item.id === product.id);
+      if (exists) {
+        showToast('Removed from Wishlist', `${product.name} removed from saved list.`, 'error');
+        return prev.filter((item) => item.id !== product.id);
+      } else {
+        showToast('Saved to Wishlist', `${product.name} added to saved wishlist.`);
+        return [...prev, product];
+      }
+    });
+  };
+
+  const handleApplyCoupon = () => {
+    const found = coupons.find((c) => c.code === couponCode && c.active);
+    if (found) {
+      setAppliedCoupon(found);
+      showToast('Coupon Applied!', `You received ${found.discountPercent}% discount with ${found.code}.`);
+    } else {
+      showToast('Invalid Coupon', 'Please enter a valid active promo code e.g. VAULT10.', 'error');
+    }
+  };
+
+  const handleOrderSuccess = (newOrder) => {
+    setOrders([newOrder, ...orders]);
+    setCart([]);
+    setAppliedCoupon(null);
+    setSelectedOrderForInvoice(newOrder);
+    showToast('Order Confirmed!', `Invoice #${newOrder.id} generated.`);
+  };
+
+  // Filtered catalog
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      const matchesCat = selectedCategory === 'All' || p.category === selectedCategory;
+      const matchesSearch =
+        !searchQuery ||
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.sku.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCat && matchesSearch;
+    });
+  }, [products, selectedCategory, searchQuery]);
+
+  return (
+    <div className="min-h-screen bg-[#FFFDF8] text-[#292825] flex flex-col font-sans">
+      
+      {/* Toast Notification */}
+      <ToastNotification toast={toast} onClose={() => setToast(null)} />
+
+      {/* Global Navigation Header */}
+      <GlobalHeader
+        activePage={activePage}
+        setActivePage={(page) => {
+          setActivePage(page);
+          setSelectedProduct(null);
+        }}
+        cartCount={cart.reduce((a, b) => a + b.quantity, 0)}
+        wishlistCount={wishlist.length}
+        onOpenCart={() => setIsCartOpen(true)}
+        onOpenSearch={() => setIsSearchOpen(true)}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        user={user}
+      />
+
+      {/* Search Overlay Modal */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 z-50 bg-[#292825]/70 backdrop-blur-md flex items-start justify-center pt-20 px-4">
+          <div className="bg-[#FFFDF8] max-w-2xl w-full rounded-2xl p-6 shadow-2xl border border-[#E8E6E1] space-y-4">
+            <div className="flex items-center justify-between border-b border-[#E8E6E1] pb-3">
+              <span className="font-serif font-bold text-sm text-[#292825] uppercase tracking-wider">Search Vault Catalog</span>
+              <button onClick={() => setIsSearchOpen(false)} className="text-[#292825] hover:text-[#C9A45C]">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex items-center space-x-3 bg-[#F7F3EA] p-3 rounded-xl border border-[#E8E6E1]">
+              <Search className="w-5 h-5 text-[#C9A45C]" />
+              <input
+                type="text"
+                autoFocus
+                placeholder="Search by brand (Omega, Rolex), watch name, or SKU..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent outline-none text-xs text-[#292825]"
+              />
+            </div>
+            <button
+              onClick={() => {
+                setIsSearchOpen(false);
+                setActivePage('categories');
+              }}
+              className="w-full bg-[#292825] text-[#C9A45C] py-2.5 rounded-xl font-bold text-xs uppercase"
+            >
+              View Search Results ({filteredProducts.length})
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content Router */}
+      <main className="flex-1">
+        {selectedProduct ? (
+          <ProductDetailPage
+            product={selectedProduct}
+            onAddToCart={handleAddToCart}
+            onBuyNow={handleBuyNow}
+            onToggleWishlist={handleToggleWishlist}
+            isWishlisted={wishlist.some((w) => w.id === selectedProduct.id)}
+            onBack={() => setSelectedProduct(null)}
+            onAddReview={(pId, newRev) => {
+              setProducts((prev) =>
+                prev.map((p) =>
+                  p.id === pId ? { ...p, reviewsCount: p.reviewsCount + 1 } : p
+                )
+              );
+              showToast('Review Submitted', 'Thank you for your horological feedback.');
+            }}
+          />
+        ) : (
+          <>
+            {activePage === 'home' && (
+              <div>
+                <HeroCarousel
+                  onExplore={(cat) => {
+                    setSelectedCategory(cat);
+                    setActivePage('categories');
+                  }}
+                />
+                <TrustStrip />
+
+                {/* Categories Overview */}
+                <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-[#E8E6E1] pb-6 gap-4">
+                    <div>
+                      <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#C9A45C]">CURATED COLLECTIONS</span>
+                      <h2 className="font-serif text-3xl font-bold text-[#292825] mt-1">THE FIVE VAULT COLLECTIONS</h2>
+                    </div>
+                    <div className="flex space-x-2 overflow-x-auto pb-2 max-w-full">
+                      {['All', 'Watches for Couples', 'Watches for Men', 'Watches for Women', 'Watches for Children', 'Masters Collection'].map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => setSelectedCategory(cat)}
+                          className={`text-xs uppercase font-bold tracking-wider px-4 py-2 rounded-full transition-all whitespace-nowrap ${
+                            selectedCategory === cat ? 'bg-[#C9A45C] text-[#292825]' : 'bg-[#F7F3EA] text-[#292825]/70 hover:bg-[#E8E6E1]'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Product Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {filteredProducts.slice(0, 12).map((p) => (
+                      <ProductCard
+                        key={p.id}
+                        product={p}
+                        onQuickView={(prod) => setQuickViewProduct(prod)}
+                        onAddToCart={handleAddToCart}
+                        onBuyNow={handleBuyNow}
+                        onToggleWishlist={handleToggleWishlist}
+                        isWishlisted={wishlist.some((w) => w.id === p.id)}
+                        onViewDetails={(prod) => setSelectedProduct(prod)}
+                      />
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {activePage === 'categories' && (
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+                <div className="flex justify-between items-center border-b border-[#E8E6E1] pb-4">
+                  <h1 className="font-serif text-3xl font-bold text-[#292825]">
+                    {selectedCategory === 'All' ? 'Complete Vault Catalog' : selectedCategory}
+                  </h1>
+                  <span className="text-xs text-[#292825]/60 font-semibold">{filteredProducts.length} Timepieces</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {filteredProducts.map((p) => (
+                    <ProductCard
+                      key={p.id}
+                      product={p}
+                      onQuickView={(prod) => setQuickViewProduct(prod)}
+                      onAddToCart={handleAddToCart}
+                      onBuyNow={handleBuyNow}
+                      onToggleWishlist={handleToggleWishlist}
+                      isWishlisted={wishlist.some((w) => w.id === p.id)}
+                      onViewDetails={(prod) => setSelectedProduct(prod)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activePage === 'deals' && (
+              <DealsPage
+                products={products}
+                onAddToCart={handleAddToCart}
+                onBuyNow={handleBuyNow}
+                onQuickView={(prod) => setQuickViewProduct(prod)}
+                onToggleWishlist={handleToggleWishlist}
+                wishlist={wishlist}
+              />
+            )}
+
+            {activePage === 'about' && <AboutPage />}
+            {activePage === 'contact' && <ContactPage onShowToast={showToast} />}
+            
+            {activePage === 'checkout' && (
+              <CheckoutPage
+                cart={cart}
+                appliedCoupon={appliedCoupon}
+                onOrderSuccess={handleOrderSuccess}
+                onBackToCart={() => setIsCartOpen(true)}
+              />
+            )}
+
+            {activePage === 'account' && (
+              <AccountDashboard
+                user={user}
+                orders={orders}
+                wishlist={wishlist}
+                onSelectOrderForInvoice={(ord) => setSelectedOrderForInvoice(ord)}
+              />
+            )}
+
+            {activePage === 'admin' && (
+              <AdminDashboard
+                products={products}
+                orders={orders}
+                coupons={coupons}
+                onUpdateStock={(id, newStock) => {
+                  setProducts((prev) =>
+                    prev.map((p) => (p.id === id ? { ...p, stock: newStock } : p))
+                  );
+                  showToast('Stock Updated', 'Product quantity modified successfully.');
+                }}
+                onAddProduct={(newProd) => {
+                  setProducts([newProd, ...products]);
+                  showToast('Watch Added', `${newProd.name} published to Vault.`);
+                }}
+                onDeleteProduct={(id) => {
+                  setProducts(products.filter((p) => p.id !== id));
+                  showToast('Product Removed', 'Watch deleted from catalog.', 'error');
+                }}
+              />
+            )}
+
+            {activePage === 'wishlist' && (
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
+                <h1 className="font-serif text-3xl font-bold text-[#292825]">SAVED VAULT WISHLIST</h1>
+                {wishlist.length === 0 ? (
+                  <p className="text-xs text-[#292825]/60">Your wishlist is currently empty.</p>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {wishlist.map((p) => (
+                      <ProductCard
+                        key={p.id}
+                        product={p}
+                        onQuickView={(prod) => setQuickViewProduct(prod)}
+                        onAddToCart={handleAddToCart}
+                        onBuyNow={handleBuyNow}
+                        onToggleWishlist={handleToggleWishlist}
+                        isWishlisted={true}
+                        onViewDetails={(prod) => setSelectedProduct(prod)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </main>
+
+      {/* Cart Drawer */}
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cart={cart}
+        onUpdateQty={(id, q) =>
+          setCart(cart.map((item) => (item.id === id ? { ...item, quantity: Math.max(1, q) } : item)))
+        }
+        onRemoveItem={(id) => setCart(cart.filter((item) => item.id !== id))}
+        onProceedToCheckout={() => setActivePage('checkout')}
+        couponCode={couponCode}
+        setCouponCode={setCouponCode}
+        appliedCoupon={appliedCoupon}
+        onApplyCoupon={handleApplyCoupon}
+        onRemoveCoupon={() => setAppliedCoupon(null)}
+      />
+
+      {/* Invoice Modal */}
+      {selectedOrderForInvoice && (
+        <InvoiceModal
+          order={selectedOrderForInvoice}
+          onClose={() => setSelectedOrderForInvoice(null)}
+        />
+      )}
+
+      {/* Footer */}
+      <Footer setActivePage={setActivePage} />
+
+    </div>
+  );
+}
